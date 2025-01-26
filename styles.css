@@ -1,7 +1,14 @@
 :root {
   --primary-color: #4CAF50;
   --secondary-color: #ffffff;
+  --selected-color: #007BFF;
   --font-color: #333333;
+  --timer-color: #ff5722;
+  --button-bg: #4CAF50;
+  --button-color: white;
+  --button-hover-bg: #45a049;
+  --font-size: 1.2rem;
+  --container-padding: 2rem;
 }
 
 body {
@@ -9,48 +16,151 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
   background-color: var(--secondary-color);
   color: var(--font-color);
+  min-height: 100vh;
+}
+
+h1 {
+  margin-bottom: 2rem;
 }
 
 .container {
-  text-align: center;
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  padding: var(--container-padding);
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--container-padding);
+}
+
+.test-button {
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  font-size: var(--font-size);
+  padding: 1rem 2rem;
+  margin: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  max-width: 400px;
+}
+
+.test-button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.options button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
   background-color: var(--primary-color);
   color: var(--secondary-color);
-}
-
-label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-button {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
-  border: none;
+.options button:hover {
+  background-color: #45a049;
+}
+
+.options button.selected {
+  background-color: var(--selected-color);
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.nav-buttons button {
   padding: 10px 20px;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
 }
 
-button:hover {
-  background-color: #f5f5f5;
+.prev {
+  background-color: #f44336;
+  color: #ffffff;
+}
+
+.next {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.next:hover {
+  background-color: #45a049;
+}
+
+.prev:hover {
+  background-color: #d32f2f;
+}
+
+.timer {
+  margin: 20px 0;
+  font-size: 18px;
+  color: var(--timer-color);
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 16px;
+  margin: 10px 0;
+  text-align: center;
+  display: none;
+}
+
+.results {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.results h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.results p {
+  margin: 5px 0;
+}
+
+.results .back-button {
+  display: block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.results .back-button:hover {
+  background-color: #45a049;
 }
