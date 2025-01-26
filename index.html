@@ -79,19 +79,19 @@
 
   <script>
     document.getElementById('student-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const group = document.getElementById('group').value;
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const group = document.getElementById('group').value;
 
-      if (name && group) {
-        // Сохранение данных в локальное хранилище
-        localStorage.setItem('studentName', name);
-        localStorage.setItem('studentGroup', group);
+  if (name && group) {
+    // Сохранение данных в локальное хранилище
+    localStorage.setItem('studentName', name);
+    localStorage.setItem('studentGroup', group);
 
-        // Переход на страницу выбора темы
-        <a href="test-selection.html">Выбрать тему</a>;
-      }
-    });
+    // Переход на страницу выбора темы
+    window.location.href = "test-selection.html";
+  }
+});
   </script>
 </body>
 </html>
