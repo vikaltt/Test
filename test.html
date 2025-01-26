@@ -207,7 +207,7 @@
 
     async function loadQuestions() {
       try {
-        const response = await fetch('./files/question.json');
+        const response = await fetch('https://vikaltt.github.io/Test/files/question.json');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
