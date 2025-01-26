@@ -209,14 +209,14 @@
     // Инициализация Telegram WebApp API
     if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
       Telegram.WebApp.init();
-      
-      // Проверка доступности openSettings через Telegram.WebApp
-      if (typeof Telegram.WebApp.openSettings === 'function') {
-        Telegram.WebApp.openSettings();
+
+      // Проверка наличия функции openSettings через Telegram.WebApp
+    if (typeof Telegram.WebApp.openSettings !== 'function') {
+      console.warn('openSettings function not found!');
       } else {
-        console.warn('openSettings function not found!');
-      }
-    } else {
+        Telegram.WebApp.openSettings();
+   }
+      } else {
       console.warn('Telegram WebApp API не найдено.');
     }
 
