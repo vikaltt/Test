@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тестирование</title>
+  <title>Выбор теста</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Тестирование</h1>
-    <div class="timer" id="timer">10:00</div>
-    <div class="question" id="question">Загрузка вопроса...</div>
-    <div class="options" id="options"></div>
-    <div class="error-message" id="errorMessage"></div>
-    <div class="nav-buttons">
-      <button class="prev" onclick="prevQuestion()">Назад</button>
-      <button class="next" id="nextButton" onclick="nextQuestion()">Далее</button>
-    </div>
-    <div class="results" id="results" style="display: none;"></div>
+  <h1>Выберите тест</h1>
+
+  <div class="button-container">
+    <button class="test-button" onclick="window.location.href='test.html?test=1'">Тест 1</button>
+    <button class="test-button" onclick="window.location.href='test.html?test=2'">Тест 2</button>
+    <button class="test-button" onclick="window.location.href='test.html?test=3'">Тест 3</button>
+    <button class="test-button" onclick="window.location.href='test.html?test=4'">Тест 4</button>
+    <button class="test-button" onclick="window.location.href='test.html?test=5'">Тест 5</button>
   </div>
 
   <script src="script.js"></script>
