@@ -193,6 +193,7 @@
     <div class="results" id="results" style="display: none;"></div>
   </div>
 
+  <script async src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     let questions = [];
     let currentQuestionIndex = 0;
@@ -204,6 +205,13 @@
     const errorMessageElement = document.getElementById('errorMessage');
     const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
+
+    // Проверка наличия Telegram WebApp API
+    if (typeof TelegramWebApp !== 'undefined') {
+      TelegramWebApp.init();
+    } else {
+      console.warn('Telegram WebApp API не найдено.');
+    }
 
     async function loadQuestions() {
       try {
@@ -286,44 +294,31 @@
     }
 
     function finishTest() {
-      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
-      const score = correctAnswers.filter(Boolean).length;
-
-      resultsElement.innerHTML = `
-        <h2>Результаты теста</h2>
-        <p>Студент: ${localStorage.getItem('studentName')}</p>
-        <p>Группа: ${localStorage.getItem('studentGroup')}</p>
-        <p>Ваш результат: ${score} из ${questions.length}</p>
-        <a href="test-selection.html" class="back-button">Выбрать другой тест</a>
-      `;
       resultsElement.style.display = 'block';
-      questionElement.style.display = 'none';
-      optionsElement.style.display = 'none';
-      document.querySelector('.nav-buttons').style.display = 'none';
+      let resultHTML = '<h2>Результаты:</h2>';
+      questions.forEach((question, index) => {
+        const selectedOption = question.options[selectedAnswers[index]];
+        resultHTML += `<p>${index + 1}. ${question.question}</p><p>Ваш ответ: ${selectedOption || 'не выбран'}</p>`;
+      });
+      resultsElement.innerHTML = resultHTML;
     }
 
-    function startTimer(duration) {
-      let timer = duration, minutes, seconds;
-      const interval = setInterval(() => {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    loadQuestions();
 
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-
-        timerElement.textContent = `${minutes}:${seconds}`;
-        if (--timer < 0) {
-          timerExpired = true;
-          clearInterval(interval);
-          checkAnswersBeforeFinish();
-        }
-      }, 1000);
-    }
-
-    window.onload = () => {
-      loadQuestions();
-      startTimer(600); // 10 минут
-    };
+    let timer = 600;
+    const timerInterval = setInterval(() => {
+      if (timer <= 0) {
+        clearInterval(timerInterval);
+        timerExpired = true;
+        errorMessageElement.textContent = 'Время вышло!';
+        errorMessageElement.style.display = 'block';
+      } else {
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timer--;
+      }
+    }, 1000);
   </script>
 </body>
 </html>
