@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тестирование</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Тестирование</h1>
+    <div class="timer" id="timer">10:00</div>
+    <div class="question" id="question">Загрузка вопроса...</div>
+    <div class="options" id="options"></div>
+    <div class="error-message" id="errorMessage"></div>
+    <div class="nav-buttons">
+      <button class="prev" onclick="prevQuestion()">Назад</button>
+      <button class="next" id="nextButton" onclick="nextQuestion()">Далее</button>
+    </div>
+    <div class="results" id="results" style="display: none;"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
