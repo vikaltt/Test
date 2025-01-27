@@ -8,7 +8,7 @@
     :root {
       --primary-color: #4CAF50;
       --secondary-color: #ffffff;
-      --selected-color: #007BFF;
+      --selected-color: #007BFF; /* Синий цвет */
       --font-color: #333333;
       --timer-color: #ff5722;
     }
@@ -103,7 +103,7 @@
     }
 
     .error-message {
-      color: #f44336;
+      color: #f44336; /* Красный цвет */
       font-size: 16px;
       margin: 10px 0;
       text-align: center;
@@ -161,7 +161,7 @@
     let questions = [];
     let currentQuestionIndex = 0;
     let selectedAnswers = {};
-    let timerExpired = false;
+    let timerExpired = false; // Флаг окончания времени
     const timerElement = document.getElementById('timer');
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
@@ -169,20 +169,19 @@
     const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
 
-    // Загружаем вопросы
     async function loadQuestions() {
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
-      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
+      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 5);
       displayQuestion();
     }
 
-    // Отображаем текущий вопрос
     function displayQuestion() {
       const question = questions[currentQuestionIndex];
-      questionElement.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
+      questionElement.textContent = `${currentQuestionIndex + 1}. ${question.question}`;
       optionsElement.innerHTML = '';
-      errorMessageElement.style.display = 'none';
+      errorMessageElement.style.display = 'none'; // Скрыть сообщение об ошибке при переключении вопросов
+
 
       if (question.image_url) {
         const img = document.createElement('img');
@@ -193,7 +192,7 @@
 
       const shuffledOptions = question.options.slice().sort(() => 0.5 - Math.random());
 
-      shuffledOptions.forEach((option, index) => {
+      question.options.forEach((option, index) => {
         const button = document.createElement('button');
         button.textContent = option;
         button.classList.add('option');
@@ -207,7 +206,6 @@
       nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'Завершить тест' : 'Далее';
     }
 
-    // Выбор ответа
     function selectAnswer(questionIndex, optionIndex, button) {
       selectedAnswers[questionIndex] = optionIndex;
       const buttons = optionsElement.querySelectorAll('button');
@@ -215,7 +213,6 @@
       button.classList.add('selected');
     }
 
-    // Переход к следующему вопросу
     function nextQuestion() {
       if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
@@ -225,7 +222,6 @@
       }
     }
 
-    // Переход к предыдущему вопросу
     function prevQuestion() {
       if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
@@ -233,7 +229,6 @@
       }
     }
 
-    // Проверка ответов перед завершением теста
     function checkAnswersBeforeFinish() {
       const unanswered = questions
         .map((_, index) => (selectedAnswers[index] === undefined ? index + 1 : null))
@@ -248,30 +243,16 @@
       }
     }
 
-    // Завершаем тест и выводим результаты
     function finishTest() {
-      const correctAnswers = questions.map((q, i) => {
-        return q.answer === q.options[selectedAnswers[i]];
-      });
+      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
       const score = correctAnswers.filter(Boolean).length;
-
-      // Логирование правильных и выбранных ответов для отладки
-      console.log('Правильные ответы:', correctAnswers);
-      console.log(`Ваш результат: ${score} из ${questions.length}`);
-
-      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
-      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
-      const testName = localStorage.getItem('testName') || 'Неизвестно';
-
-      sendDataToGoogleForms(studentName, studentGroup, testName, score);
 
       resultsElement.innerHTML = `
         <h2>Результаты теста</h2>
-        <p>Студент: ${studentName}</p>
-        <p>Группа: ${studentGroup}</p>
-        <p>Тест: ${testName}</p>
+        <p>Студент: ${localStorage.getItem('studentName')}</p>
+        <p>Группа: ${localStorage.getItem('studentGroup')}</p>
         <p>Ваш результат: ${score} из ${questions.length}</p>
-        <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
+        <a href='test-selection.html'>Выбрать другой тест</a>
       `;
       resultsElement.style.display = 'block';
       questionElement.style.display = 'none';
@@ -279,51 +260,22 @@
       document.querySelector('.nav-buttons').style.display = 'none';
     }
 
-    // Отправка данных в Google Forms
-    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
-      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
-      const data = new FormData();
-      data.append('entry.1275794241', studentName);
-      data.append('entry.1053749527', studentGroup);
-      data.append('entry.1852646018', testName);
-      data.append('entry.1401696739', score);
-
-      fetch(formURL, {
-        method: 'POST',
-        body: data,
-        mode: 'no-cors'
-      })
-      .then(response => {
-        console.log('Данные отправлены');
-      })
-      .catch(error => {
-        console.log('Ошибка при отправке данных:', error);
-      });
-    }
-
-    // Таймер
-    let timer;
-    let timeLeft = 10 * 60; // 10 минут в секундах
-
-    function startTimer() {
-      timer = setInterval(() => {
-        if (timeLeft <= 0) {
-          clearInterval(timer);
+    function startTimer(duration) {
+      let timer = duration, minutes, seconds;
+      const interval = setInterval(() => {
+        minutes = Math.floor(timer / 60);
+        seconds = timer % 60;
+        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        if (--timer < 0) {
+          clearInterval(interval);
           timerExpired = true;
-          checkAnswersBeforeFinish();
-        } else {
-          timeLeft--;
-          const minutes = Math.floor(timeLeft / 60);
-          const seconds = timeLeft % 60;
-          timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+          finishTest();
         }
       }, 1000);
     }
 
-    window.onload = () => {
-      loadQuestions();
-      startTimer();
-    };
+    loadQuestions();
+    startTimer(10 * 60);
   </script>
 </body>
 </html>
