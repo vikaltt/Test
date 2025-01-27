@@ -277,10 +277,7 @@
       formData.append("entry.1002659139", studentGroup); // Группа студента
       formData.append("entry.1718485540", testName); // Название теста
       formData.append("entry.1008950575", score); // Результат
-      formData.append("entry.2023693519_year", new Date().getFullYear()); // Год
-      formData.append("entry.2023693519_month", new Date().getMonth() + 1); // Месяц
-      formData.append("entry.2023693519_day", new Date().getDate()); // День
-
+     
       fetch(formURL, {
         method: "POST",
         body: formData,
