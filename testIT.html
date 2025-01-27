@@ -109,6 +109,38 @@
       text-align: center;
       display: none;
     }
+
+    .results {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .results h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .results p {
+      margin: 5px 0;
+    }
+
+    .results .back-button {
+      display: block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      border: none;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .results .back-button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -122,6 +154,7 @@
       <button class="prev" onclick="prevQuestion()">Назад</button>
       <button class="next" id="nextButton" onclick="nextQuestion()">Далее</button>
     </div>
+    <div class="results" id="results" style="display: none;"></div>
   </div>
 
   <script>
@@ -133,20 +166,21 @@
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const errorMessageElement = document.getElementById('errorMessage');
+    const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
 
     async function loadQuestions() {
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
 
-      const randomQuestions = [
-        ...allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7),
-        ...allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12),
-        ...allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5),
-        ...allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6),
-      ];
+      // Выбор вопросов из указанных диапазонов
+      const range1 = allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7); // 7 вопросов из 1-30
+      const range2 = allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12); // 12 вопросов из 31-98
+      const range3 = allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5); // 5 вопросов из 99-114
+      const range4 = allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6); // 6 вопросов из 115-150
 
-      questions = randomQuestions.sort(() => 0.5 - Math.random());
+      // Объединяем все выбранные вопросы и перемешиваем
+      questions = [...range1, ...range2, ...range3, ...range4].sort(() => 0.5 - Math.random());
       displayQuestion();
     }
 
@@ -217,14 +251,27 @@
     }
 
     function finishTest() {
+      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
+      const score = correctAnswers.filter(Boolean).length;
+
       const studentName = localStorage.getItem('studentName') || 'Неизвестно';
       const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
       const testName = localStorage.getItem('testName') || 'Неизвестно';
 
-      const score = Object.keys(selectedAnswers).length; // Просто количество ответов (можно расширить под нужды)
       sendDataToGoogleForms(studentName, studentGroup, testName, score);
 
-      alert("Тест завершён. Данные отправлены!");
+      resultsElement.innerHTML = `
+        <h2>Результаты теста</h2>
+        <p>Студент: ${studentName}</p>
+        <p>Группа: ${studentGroup}</p>
+        <p>Тест: ${testName}</p>
+        <p>Ваш результат: ${score} из ${questions.length}</p>
+        <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
+      `;
+      resultsElement.style.display = 'block';
+      questionElement.style.display = 'none';
+      optionsElement.style.display = 'none';
+      document.querySelector('.nav-buttons').style.display = 'none';
     }
 
     function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
@@ -266,7 +313,7 @@
     }
 
     loadQuestions();
-    startTimer(35 * 60);
+    startTimer(35 * 60); // Устанавливаем таймер на 35 минут
   </script>
 </body>
 </html>
