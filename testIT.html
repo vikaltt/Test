@@ -173,13 +173,16 @@
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
 
-      // Выбор вопросов из указанных диапазонов
-      const range1 = allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7); // 7 вопросов из 1-30
-      const range2 = allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12); // 12 вопросов из 31-98
-      const range3 = allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5); // 5 вопросов из 99-114
-      const range4 = allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6); // 6 вопросов из 115-150
+      // Выбор 7 случайных вопросов из диапазона 1-30
+      const range1 = allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7);
+      // Выбор 12 случайных вопросов из диапазона 31-98
+      const range2 = allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12);
+      // Выбор 5 случайных вопросов из диапазона 99-114
+      const range3 = allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5);
+      // Выбор 6 случайных вопросов из диапазона 115-150
+      const range4 = allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6);
 
-      // Объединяем все выбранные вопросы и перемешиваем
+      // Объединение всех выбранных вопросов
       questions = [...range1, ...range2, ...range3, ...range4].sort(() => 0.5 - Math.random());
       displayQuestion();
     }
@@ -260,8 +263,14 @@
 
       sendDataToGoogleForms(studentName, studentGroup, testName, score);
 
-      // Перенаправляем пользователя на страницу выбора теста
-      window.location.href = 'test-selection.html';
+      // Убираем показ результатов
+      resultsElement.innerHTML = `
+        <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
+      `;
+      resultsElement.style.display = 'block';
+      questionElement.style.display = 'none';
+      optionsElement.style.display = 'none';
+      document.querySelector('.nav-buttons').style.display = 'none';
     }
 
     function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
