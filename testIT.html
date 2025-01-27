@@ -217,7 +217,38 @@
     }
 
     function finishTest() {
-      alert("Тест завершён. Спасибо за участие!");
+      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
+      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
+      const testName = localStorage.getItem('testName') || 'Неизвестно';
+
+      const score = Object.keys(selectedAnswers).length; // Просто количество ответов (можно расширить под нужды)
+      sendDataToGoogleForms(studentName, studentGroup, testName, score);
+
+      alert("Тест завершён. Данные отправлены!");
+    }
+
+    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
+      const formData = new FormData();
+      formData.append("entry.1589564253", studentName);
+      formData.append("entry.1002659139", studentGroup);
+      formData.append("entry.1718485540", testName);
+      formData.append("entry.1008950575", score);
+
+      fetch(formURL, {
+        method: "POST",
+        body: formData,
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("Данные успешно отправлены в Google Forms!");
+          } else {
+            console.error("Ошибка при отправке данных.");
+          }
+        })
+        .catch(error => {
+          console.error("Ошибка при отправке данных:", error);
+        });
     }
 
     function startTimer(duration) {
