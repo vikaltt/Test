@@ -201,9 +201,46 @@
     }
 
     function finishTest() {
+      // Получаем информацию о пользователе
+      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
+      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
+      const testName = localStorage.getItem('testName') || 'Неизвестно';
+
+      // Считаем результат теста
+      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
+      const score = correctAnswers.filter(Boolean).length;
+
+      // Отправляем данные в Google Forms
+      sendDataToGoogleForms(studentName, studentGroup, testName, score);
+
+      // Показываем сообщение об окончании теста
       questionElement.innerHTML = 'Спасибо за прохождение теста!';
       optionsElement.style.display = 'none';
       document.querySelector('.nav-buttons').style.display = 'none';
+    }
+
+    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
+      const formData = new FormData();
+      formData.append("entry.1589564253", studentName);
+      formData.append("entry.1002659139", studentGroup);
+      formData.append("entry.1718485540", testName);
+      formData.append("entry.1008950575", score);
+
+      fetch(formURL, {
+        method: "POST",
+        body: formData,
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("Данные успешно отправлены в Google Forms!");
+          } else {
+            console.error("Ошибка при отправке данных в Google Forms.");
+          }
+        })
+        .catch(error => {
+          console.error("Ошибка при отправке данных:", error);
+        });
     }
 
     function startTimer(duration) {
