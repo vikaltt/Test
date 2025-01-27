@@ -109,38 +109,6 @@
       text-align: center;
       display: none;
     }
-
-    .results {
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .results h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .results p {
-      margin: 5px 0;
-    }
-
-    .results .back-button {
-      display: block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: var(--primary-color);
-      color: var(--secondary-color);
-      border: none;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .results .back-button:hover {
-      background-color: #45a049;
-    }
   </style>
 </head>
 <body>
@@ -154,7 +122,6 @@
       <button class="prev" onclick="prevQuestion()">Назад</button>
       <button class="next" id="nextButton" onclick="nextQuestion()">Далее</button>
     </div>
-    <div class="results" id="results" style="display: none;"></div>
   </div>
 
   <script>
@@ -166,19 +133,20 @@
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const errorMessageElement = document.getElementById('errorMessage');
-    const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
 
     async function loadQuestions() {
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
 
-      const range1 = allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7);
-      const range2 = allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12);
-      const range3 = allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5);
-      const range4 = allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6);
+      const randomQuestions = [
+        ...allQuestions.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7),
+        ...allQuestions.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12),
+        ...allQuestions.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5),
+        ...allQuestions.slice(114, 150).sort(() => 0.5 - Math.random()).slice(0, 6),
+      ];
 
-      questions = [...range1, ...range2, ...range3, ...range4].sort(() => 0.5 - Math.random());
+      questions = randomQuestions.sort(() => 0.5 - Math.random());
       displayQuestion();
     }
 
@@ -249,51 +217,7 @@
     }
 
     function finishTest() {
-      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
-      const score = correctAnswers.filter(Boolean).length;
-
-      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
-      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
-      const testName = localStorage.getItem('testName') || 'Неизвестно';
-
-      sendDataToGoogleForms(studentName, studentGroup, testName, score);
-
-      resultsElement.innerHTML = `
-        <h2>Результаты теста</h2>
-        <p>Студент: ${studentName}</p>
-        <p>Группа: ${studentGroup}</p>
-        <p>Тест: ${testName}</p>
-        <p>Ваш результат: ${score} из ${questions.length}</p>
-        <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
-      `;
-      resultsElement.style.display = 'none'; // Скрываем результаты
-      questionElement.style.display = 'none';
-      optionsElement.style.display = 'none';
-      document.querySelector('.nav-buttons').style.display = 'none';
-    }
-
-    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
-      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
-      const formData = new FormData();
-      formData.append("entry.1589564253", studentName);
-      formData.append("entry.1002659139", studentGroup);
-      formData.append("entry.1718485540", testName);
-      formData.append("entry.1008950575", score);
-
-      fetch(formURL, {
-        method: "POST",
-        body: formData,
-      })
-        .then(response => {
-          if (response.ok) {
-            console.log("Данные успешно отправлены в Google Forms!");
-          } else {
-            console.error("Ошибка при отправке данных.");
-          }
-        })
-        .catch(error => {
-          console.error("Ошибка при отправке данных:", error);
-        });
+      alert("Тест завершён. Спасибо за участие!");
     }
 
     function startTimer(duration) {
@@ -311,7 +235,7 @@
     }
 
     loadQuestions();
-    startTimer(35 * 60); // Устанавливаем таймер на 35 минут
+    startTimer(35 * 60);
   </script>
 </body>
 </html>
