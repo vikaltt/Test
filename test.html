@@ -172,24 +172,13 @@
     async function loadQuestions() {
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
-      questions = allQuestions.slice(10, 21).map(q => ({
-        ...q,
-        options: shuffleArray([...q.options]), // Перемешиваем варианты
-      }));
+      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
       displayQuestion();
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
     }
 
     function displayQuestion() {
       const question = questions[currentQuestionIndex];
-      questionElement.textContent = `${currentQuestionIndex + 1}. ${question.question}`;
+      questionElement.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
       optionsElement.innerHTML = '';
       errorMessageElement.style.display = 'none';
 
@@ -200,7 +189,9 @@
         questionElement.appendChild(img);
       }
 
-      question.options.forEach((option, index) => {
+      const shuffledOptions = question.options.slice().sort(() => 0.5 - Math.random());
+
+      shuffledOptions.forEach((option, index) => {
         const button = document.createElement('button');
         button.textContent = option;
         button.classList.add('option');
@@ -255,8 +246,17 @@
       const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
       const score = correctAnswers.filter(Boolean).length;
 
+      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
+      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
+      const testName = localStorage.getItem('testName') || 'Неизвестно';
+
+      sendDataToGoogleForms(studentName, studentGroup, testName, score);
+
       resultsElement.innerHTML = `
         <h2>Результаты теста</h2>
+        <p>Студент: ${studentName}</p>
+        <p>Группа: ${studentGroup}</p>
+        <p>Тест: ${testName}</p>
         <p>Ваш результат: ${score} из ${questions.length}</p>
         <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
       `;
@@ -264,6 +264,30 @@
       questionElement.style.display = 'none';
       optionsElement.style.display = 'none';
       document.querySelector('.nav-buttons').style.display = 'none';
+    }
+
+    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
+      const formData = new FormData();
+      formData.append("entry.1589564253", studentName);
+      formData.append("entry.1002659139", studentGroup);
+      formData.append("entry.1718485540", testName);
+      formData.append("entry.1008950575", score);
+
+      fetch(formURL, {
+        method: "POST",
+        body: formData,
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("Данные успешно отправлены в Google Forms!");
+          } else {
+            console.error("Ошибка при отправке данных.");
+          }
+        })
+        .catch(error => {
+          console.error("Ошибка при отправке данных:", error);
+        });
     }
 
     function startTimer(duration) {
