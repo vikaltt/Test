@@ -17,6 +17,7 @@
     <div id="questionContainer">
         <!-- Вопросы будут динамически добавляться сюда -->
     </div>
+    
     <div id="buttonContainer">
         <button onclick="previousQuestion()">Предыдущий</button>
         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
@@ -24,9 +25,12 @@
     </div>
     
     <div id="resultContainer" style="display:none;">
-        <h3>Ваши результаты</h3>
-        <p>Правильных ответов: <span id="correctAnswersCount"></span></p>
-        <button onclick="window.location.href='test-selection.html'">Выбрать другой тест</button>
+        <h3>Тест завершен!</h3>
+        <button onclick="window.location.href='test-Selection.html'">Выбрать другой тест</button>
+    </div>
+    
+    <div id="unansweredWarning" style="color: red; display: none;">
+        <p>Вы не ответили на следующие вопросы: <span id="unansweredQuestionsList"></span></p>
     </div>
     
     <script>
@@ -38,15 +42,21 @@
         let answers = [];
         let correctAnswers = [];
         let timer;
-        let timeLeft = 10 * 60; // 10 минут в секундах
+        let timeLeft = 35 * 60; // 35 минут в секундах
 
         // Загрузка вопросов из JSON
         fetch('./files/question.json')
             .then(response => response.json())
             .then(data => {
-                // Выбираем вопросы с 10 по 21 (индексы 9-20) и случайным образом выбираем 5 из них
-                questions = data.slice(9, 21).sort(() => 0.5 - Math.random()).slice(0, 5);
+                // Выбираем вопросы по указанным диапазонам и случайным образом
+                const range1 = data.slice(0, 30).sort(() => 0.5 - Math.random()).slice(0, 7);
+                const range2 = data.slice(30, 98).sort(() => 0.5 - Math.random()).slice(0, 12);
+                const range3 = data.slice(98, 114).sort(() => 0.5 - Math.random()).slice(0, 5);
+                const range4 = data.slice(114, 151).sort(() => 0.5 - Math.random()).slice(0, 6);
+                
+                questions = [...range1, ...range2, ...range3, ...range4]; // Все вопросы вместе
                 correctAnswers = questions.map(q => q.answer); // Массив с правильными ответами
+
                 // Перемешиваем ответы
                 questions.forEach(question => shuffleArray(question.options));
                 displayQuestion(currentQuestionIndex);
@@ -68,7 +78,9 @@
             document.getElementById('topic').innerText = topic;
 
             const questionContainer = document.getElementById('questionContainer');
-            let questionHTML = `<p>${question.question}</p>`;
+            
+            // Отображение номера вопроса и текста вопроса
+            let questionHTML = `<p><strong>${index + 1}.</strong> ${question.question}</p>`;
 
             // Если есть изображение, показываем его
             if (question.image_url) {
@@ -124,13 +136,36 @@
 
         // Завершение теста
         function finishTest() {
-            clearInterval(timer); // Останавливаем таймер
-            calculateResults(); // Показываем результаты
-            sendResults(); // Отправляем результаты в Google Form
-            hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"
+            const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+            if (unansweredQuestions.length > 0) {
+                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+            } else {
+                clearInterval(timer); // Останавливаем таймер
+                sendResults(); // Отправляем результаты в Google Form
+                closeQuestions(); // Закрываем вопросы
+                showFinishMessage(); // Показываем сообщение о завершении теста
+            }
         }
 
-        // Подсчет правильных ответов и отображение
+        // Проверка на неотвеченные вопросы
+        function checkUnansweredQuestions() {
+            const unanswered = [];
+            questions.forEach((question, index) => {
+                if (answers[index] === undefined) {
+                    unanswered.push(index + 1); // Добавляем номер вопроса (с 1)
+                }
+            });
+            return unanswered;
+        }
+
+        // Отображение уведомления о неотвеченных вопросах
+        function showUnansweredWarning(unanswered) {
+            const unansweredContainer = document.getElementById('unansweredQuestionsList');
+            unansweredContainer.innerHTML = unanswered.join(', ');
+            document.getElementById('unansweredWarning').style.display = 'block';
+        }
+
+        // Подсчет правильных ответов
         function calculateResults() {
             let correctCount = 0;
 
@@ -143,10 +178,7 @@
                 }
             });
 
-            // Показываем только количество правильных ответов
-            document.getElementById('correctAnswersCount').innerText = correctCount;
-            document.getElementById('resultContainer').style.display = 'block'; // Показываем результаты
-            document.getElementById('questionContainer').style.display = 'none'; // Скрываем вопросы
+            return correctCount;
         }
 
         // Отправка результатов в Google Form
@@ -154,7 +186,7 @@
             const lastName = localStorage.getItem('lastName');
             const group = localStorage.getItem('group');
             const topic = localStorage.getItem('topic');
-            const correctCount = document.getElementById('correctAnswersCount').innerText;
+            const correctCount = calculateResults();
 
             const formData = new FormData();
             formData.append('entry.1589564253', lastName);
@@ -174,6 +206,18 @@
             });
         }
 
+        // Закрытие вопросов
+        function closeQuestions() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('buttonContainer').style.display = 'none';
+        }
+
+        // Показ сообщения о завершении теста
+        function showFinishMessage() {
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('unansweredWarning').style.display = 'none'; // Прячем предупреждение, если все вопросы отвечены
+        }
+
         // Таймер
         function startTimer() {
             timer = setInterval(function() {
@@ -183,15 +227,9 @@
                 document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
                 if (timeLeft <= 0) {
-                    finishTest(); // Автоматическое завершение после 10 минут
-                    clearInterval(timer);
+                    finishTest(); // Завершаем тест, когда время вышло
                 }
             }, 1000);
-        }
-
-        // Скрыть все кнопки, кроме "Выбрать другой тест"
-        function hideButtons() {
-            document.getElementById('buttonContainer').style.display = 'none';
         }
     </script>
 </body>
