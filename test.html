@@ -162,6 +162,7 @@
     let currentQuestionIndex = 0;
     let selectedAnswers = {};
     let timerExpired = false; // Флаг окончания времени
+    let timerInterval;
     const timerElement = document.getElementById('timer');
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
@@ -245,10 +246,19 @@
       const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
       const score = correctAnswers.filter(Boolean).length;
 
+      // Сбор информации о студенте
+      const studentName = localStorage.getItem('studentName') || 'Неизвестно';
+      const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
+
+      // Добавление теста и отправка данных в Google Форму
+      const testName = localStorage.getItem('testName') || 'Неизвестно';
+      sendDataToGoogleForms(studentName, studentGroup, testName, score);
+
+      // Отображение результатов
       resultsElement.innerHTML = `
         <h2>Результаты теста</h2>
-        <p>Студент: ${localStorage.getItem('studentName')}</p>
-        <p>Группа: ${localStorage.getItem('studentGroup')}</p>
+        <p>Студент: ${studentName}</p>
+        <p>Группа: ${studentGroup}</p>
         <p>Ваш результат: ${score} из ${questions.length}</p>
         <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
       `;
@@ -256,6 +266,35 @@
       questionElement.style.display = 'none';
       optionsElement.style.display = 'none';
       document.querySelector('.nav-buttons').style.display = 'none';
+    }
+
+    // Функция для отправки данных в Google Форму
+    function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
+      const formData = new FormData();
+      
+      formData.append("entry.1589564253", studentName);  // Имя студента
+      formData.append("entry.1002659139", studentGroup); // Группа студента
+      formData.append("entry.1718485540", testName); // Название теста
+      formData.append("entry.1008950575", score); // Результат
+      formData.append("entry.2023693519_year", new Date().getFullYear()); // Год
+      formData.append("entry.2023693519_month", new Date().getMonth() + 1); // Месяц
+      formData.append("entry.2023693519_day", new Date().getDate()); // День
+
+      fetch(formURL, {
+        method: "POST",
+        body: formData,
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("Данные успешно отправлены в Google Forms!");
+        } else {
+          console.error("Ошибка при отправке данных.");
+        }
+      })
+      .catch(error => {
+        console.error("Ошибка при отправке данных:", error);
+      });
     }
 
     function startTimer(duration) {
