@@ -109,12 +109,44 @@
       text-align: center;
       display: none;
     }
+
+    .results {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .results h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .results p {
+      margin: 5px 0;
+    }
+
+    .results .back-button {
+      display: block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      border: none;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .results .back-button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Тестирование</h1>
-    <div class="timer" id="timer">35:00</div>
+    <div class="timer" id="timer">10:00</div>
     <div class="question" id="question">Загрузка вопроса...</div>
     <div class="options" id="options"></div>
     <div class="error-message" id="errorMessage"></div>
@@ -122,6 +154,7 @@
       <button class="prev" onclick="prevQuestion()">Назад</button>
       <button class="next" id="nextButton" onclick="nextQuestion()">Далее</button>
     </div>
+    <div class="results" id="results" style="display: none;"></div>
   </div>
 
   <script>
@@ -133,18 +166,13 @@
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const errorMessageElement = document.getElementById('errorMessage');
+    const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
 
     async function loadQuestions() {
       const response = await fetch('./files/question.json');
       const allQuestions = await response.json();
-
-      const questionsFromRange1 = allQuestions.slice(1, 31).sort(() => 0.5 - Math.random()).slice(0, 7);
-      const questionsFromRange2 = allQuestions.slice(31, 99).sort(() => 0.5 - Math.random()).slice(0, 12);
-      const questionsFromRange3 = allQuestions.slice(99, 115).sort(() => 0.5 - Math.random()).slice(0, 5);
-      const questionsFromRange4 = allQuestions.slice(115, 152).sort(() => 0.5 - Math.random()).slice(0, 6);
-
-      questions = [...questionsFromRange1, ...questionsFromRange2, ...questionsFromRange3, ...questionsFromRange4];
+      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
       displayQuestion();
     }
 
@@ -189,7 +217,7 @@
         currentQuestionIndex++;
         displayQuestion();
       } else {
-        finishTest();
+        checkAnswersBeforeFinish();
       }
     }
 
@@ -200,20 +228,30 @@
       }
     }
 
+    function checkAnswersBeforeFinish() {
+      const unanswered = questions
+        .map((_, index) => (selectedAnswers[index] === undefined ? index + 1 : null))
+        .filter(Boolean);
+
+      if (unanswered.length > 0 && !timerExpired) {
+        errorMessageElement.textContent = `Вы не ответили на вопросы: ${unanswered.join(', ')}`;
+        errorMessageElement.style.display = 'block';
+      } else {
+        errorMessageElement.style.display = 'none';
+        finishTest();
+      }
+    }
+
     function finishTest() {
-      // Получаем информацию о пользователе
+      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
+      const score = correctAnswers.filter(Boolean).length;
+
       const studentName = localStorage.getItem('studentName') || 'Неизвестно';
       const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
       const testName = localStorage.getItem('testName') || 'Неизвестно';
 
-      // Считаем результат теста
-      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
-      const score = correctAnswers.filter(Boolean).length;
-
-      // Отправляем данные в Google Forms
       sendDataToGoogleForms(studentName, studentGroup, testName, score);
 
-      // Показываем сообщение об окончании теста
       questionElement.innerHTML = 'Спасибо за прохождение теста!';
       optionsElement.style.display = 'none';
       document.querySelector('.nav-buttons').style.display = 'none';
@@ -235,7 +273,7 @@
           if (response.ok) {
             console.log("Данные успешно отправлены в Google Forms!");
           } else {
-            console.error("Ошибка при отправке данных в Google Forms.");
+            console.error("Ошибка при отправке данных.");
           }
         })
         .catch(error => {
@@ -258,7 +296,7 @@
     }
 
     loadQuestions();
-    startTimer(35 * 60);
+    startTimer(10 * 60);
   </script>
 </body>
 </html>
