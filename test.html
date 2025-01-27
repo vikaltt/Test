@@ -169,20 +169,15 @@
     const resultsElement = document.getElementById('results');
     const nextButton = document.getElementById('nextButton');
 
+    // Загружаем вопросы
     async function loadQuestions() {
-      try {
-        const response = await fetch('./files/question.json');
-        if (!response.ok) throw new Error('Ошибка загрузки файла');
-        const allQuestions = await response.json();
-        questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
-        console.log("Загруженные вопросы:", questions); // Отладка: вывод всех вопросов
-        displayQuestion();
-      } catch (error) {
-        errorMessageElement.textContent = "Не удалось загрузить вопросы. Попробуйте снова.";
-        errorMessageElement.style.display = 'block';
-      }
+      const response = await fetch('./files/question.json');
+      const allQuestions = await response.json();
+      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
+      displayQuestion();
     }
 
+    // Отображаем текущий вопрос
     function displayQuestion() {
       const question = questions[currentQuestionIndex];
       questionElement.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
@@ -212,23 +207,25 @@
       nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'Завершить тест' : 'Далее';
     }
 
+    // Выбор ответа
     function selectAnswer(questionIndex, optionIndex, button) {
       selectedAnswers[questionIndex] = optionIndex;
-      console.log(`Выбран ответ для вопроса ${questionIndex + 1}: ${optionIndex}`); // Отладка: вывод выбранного ответа
       const buttons = optionsElement.querySelectorAll('button');
       buttons.forEach(btn => btn.classList.remove('selected'));
       button.classList.add('selected');
     }
 
+    // Переход к следующему вопросу
     function nextQuestion() {
       if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
         displayQuestion();
       } else {
-        finishTest();
+        checkAnswersBeforeFinish();
       }
     }
 
+    // Переход к предыдущему вопросу
     function prevQuestion() {
       if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
@@ -236,6 +233,7 @@
       }
     }
 
+    // Проверка ответов перед завершением теста
     function checkAnswersBeforeFinish() {
       const unanswered = questions
         .map((_, index) => (selectedAnswers[index] === undefined ? index + 1 : null))
@@ -250,15 +248,16 @@
       }
     }
 
+    // Завершаем тест и выводим результаты
     function finishTest() {
       const correctAnswers = questions.map((q, i) => {
-        const isCorrect = q.correctOption === selectedAnswers[i];
-        console.log(`Вопрос ${i + 1}: ${isCorrect ? 'Правильный' : 'Неправильный'} ответ`); // Отладка: проверка правильных ответов
-        return isCorrect;
+        return q.answer === q.options[selectedAnswers[i]];
       });
-
       const score = correctAnswers.filter(Boolean).length;
-      console.log("Количество правильных ответов:", score); // Отладка: вывод количества правильных ответов
+
+      // Логирование правильных и выбранных ответов для отладки
+      console.log('Правильные ответы:', correctAnswers);
+      console.log(`Ваш результат: ${score} из ${questions.length}`);
 
       const studentName = localStorage.getItem('studentName') || 'Неизвестно';
       const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
@@ -280,22 +279,51 @@
       document.querySelector('.nav-buttons').style.display = 'none';
     }
 
+    // Отправка данных в Google Forms
     function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
-      const formData = new FormData();
-      formData.append('entry.123456', studentName);
-      formData.append('entry.7891011', studentGroup);
-      formData.append('entry.12131415', testName);
-      formData.append('entry.16171819', score);
-      
-      fetch('https://docs.google.com/forms/d/e/1FAIpQLS...', { // Замените на ваш URL формы
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
+      const data = new FormData();
+      data.append('entry.1275794241', studentName);
+      data.append('entry.1053749527', studentGroup);
+      data.append('entry.1852646018', testName);
+      data.append('entry.1401696739', score);
+
+      fetch(formURL, {
         method: 'POST',
-        body: formData
+        body: data,
+        mode: 'no-cors'
       })
-      .then(response => response.ok ? console.log('Данные отправлены успешно') : console.log('Ошибка отправки'))
-      .catch(error => console.log('Ошибка отправки данных:', error));
+      .then(response => {
+        console.log('Данные отправлены');
+      })
+      .catch(error => {
+        console.log('Ошибка при отправке данных:', error);
+      });
     }
 
-    loadQuestions();
+    // Таймер
+    let timer;
+    let timeLeft = 10 * 60; // 10 минут в секундах
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          timerExpired = true;
+          checkAnswersBeforeFinish();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    window.onload = () => {
+      loadQuestions();
+      startTimer();
+    };
   </script>
 </body>
 </html>
