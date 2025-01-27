@@ -170,10 +170,17 @@
     const nextButton = document.getElementById('nextButton');
 
     async function loadQuestions() {
-      const response = await fetch('./files/question.json');
-      const allQuestions = await response.json();
-      questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
-      displayQuestion();
+      try {
+        const response = await fetch('./files/question.json');
+        if (!response.ok) throw new Error('Ошибка загрузки файла');
+        const allQuestions = await response.json();
+        questions = allQuestions.slice(10, 21).sort(() => 0.5 - Math.random()).slice(0, 10);
+        console.log("Загруженные вопросы:", questions); // Отладка: вывод всех вопросов
+        displayQuestion();
+      } catch (error) {
+        errorMessageElement.textContent = "Не удалось загрузить вопросы. Попробуйте снова.";
+        errorMessageElement.style.display = 'block';
+      }
     }
 
     function displayQuestion() {
@@ -207,6 +214,7 @@
 
     function selectAnswer(questionIndex, optionIndex, button) {
       selectedAnswers[questionIndex] = optionIndex;
+      console.log(`Выбран ответ для вопроса ${questionIndex + 1}: ${optionIndex}`); // Отладка: вывод выбранного ответа
       const buttons = optionsElement.querySelectorAll('button');
       buttons.forEach(btn => btn.classList.remove('selected'));
       button.classList.add('selected');
@@ -217,7 +225,7 @@
         currentQuestionIndex++;
         displayQuestion();
       } else {
-        checkAnswersBeforeFinish();
+        finishTest();
       }
     }
 
@@ -243,8 +251,14 @@
     }
 
     function finishTest() {
-      const correctAnswers = questions.map((q, i) => q.correctOption === selectedAnswers[i]);
+      const correctAnswers = questions.map((q, i) => {
+        const isCorrect = q.correctOption === selectedAnswers[i];
+        console.log(`Вопрос ${i + 1}: ${isCorrect ? 'Правильный' : 'Неправильный'} ответ`); // Отладка: проверка правильных ответов
+        return isCorrect;
+      });
+
       const score = correctAnswers.filter(Boolean).length;
+      console.log("Количество правильных ответов:", score); // Отладка: вывод количества правильных ответов
 
       const studentName = localStorage.getItem('studentName') || 'Неизвестно';
       const studentGroup = localStorage.getItem('studentGroup') || 'Неизвестно';
@@ -267,45 +281,21 @@
     }
 
     function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
-      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse";
       const formData = new FormData();
-      formData.append("entry.1589564253", studentName);
-      formData.append("entry.1002659139", studentGroup);
-      formData.append("entry.1718485540", testName);
-      formData.append("entry.1008950575", score);
-
-      fetch(formURL, {
-        method: "POST",
-        body: formData,
+      formData.append('entry.123456', studentName);
+      formData.append('entry.7891011', studentGroup);
+      formData.append('entry.12131415', testName);
+      formData.append('entry.16171819', score);
+      
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLS...', { // Замените на ваш URL формы
+        method: 'POST',
+        body: formData
       })
-        .then(response => {
-          if (response.ok) {
-            console.log("Данные успешно отправлены в Google Forms!");
-          } else {
-            console.error("Ошибка при отправке данных.");
-          }
-        })
-        .catch(error => {
-          console.error("Ошибка при отправке данных:", error);
-        });
-    }
-
-    function startTimer(duration) {
-      let timer = duration, minutes, seconds;
-      const interval = setInterval(() => {
-        minutes = Math.floor(timer / 60);
-        seconds = timer % 60;
-        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        if (--timer < 0) {
-          clearInterval(interval);
-          timerExpired = true;
-          finishTest();
-        }
-      }, 1000);
+      .then(response => response.ok ? console.log('Данные отправлены успешно') : console.log('Ошибка отправки'))
+      .catch(error => console.log('Ошибка отправки данных:', error));
     }
 
     loadQuestions();
-    startTimer(10 * 60);
   </script>
 </body>
 </html>
