@@ -260,18 +260,8 @@
 
       sendDataToGoogleForms(studentName, studentGroup, testName, score);
 
-      resultsElement.innerHTML = `
-        <h2>Результаты теста</h2>
-        <p>Студент: ${studentName}</p>
-        <p>Группа: ${studentGroup}</p>
-        <p>Тест: ${testName}</p>
-        <p>Ваш результат: ${score} из ${questions.length}</p>
-        <a href='test-selection.html' class="back-button">Выбрать другой тест</a>
-      `;
-      resultsElement.style.display = 'block';
-      questionElement.style.display = 'none';
-      optionsElement.style.display = 'none';
-      document.querySelector('.nav-buttons').style.display = 'none';
+      // Перенаправляем пользователя на страницу выбора теста
+      window.location.href = 'test-selection.html';
     }
 
     function sendDataToGoogleForms(studentName, studentGroup, testName, score) {
