@@ -1,73 +1,85 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Выбор теста</title>
-  <style>
-    :root {
-      --button-bg: #4CAF50;
-      --button-color: white;
-      --button-hover-bg: #45a049;
-      --font-size: 1.2rem;
-      --container-padding: 2rem;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор теста</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+        }
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #f4f4f9;
-    }
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-    h1 {
-      margin-bottom: 2rem;
-    }
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
 
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: var(--container-padding);
-    }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
 
-    .test-button {
-      background-color: var(--button-bg);
-      color: var(--button-color);
-      font-size: var(--font-size);
-      padding: 1rem 2rem;
-      margin: 0.5rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      width: 100%;
-      max-width: 400px;
-    }
+        button:hover {
+            background-color: #45a049;
+        }
 
-    .test-button:hover {
-      background-color: var(--button-hover-bg);
-    }
-
-  </style>
+        button:focus {
+            outline: none;
+        }
+    </style>
 </head>
 <body>
+    <h2>Выберите тест</h2>
 
-  <h1>Выберите тест</h1>
+    <div id="buttonContainer">
+        <button onclick="startTest('Электрические цепи постоянного тока', 'test.html')">Электрические цепи постоянного тока</button>
+        <button onclick="startTest('Цепи синусоидального тока', 'testAC.html')">Цепи синусоидального тока</button>
+        <button onclick="startTest('Электрические машины и электроника', 'testEM.html')">Электрические машины и электроника</button>
+        <!-- Кнопка для перехода на итоговый тест -->
+        <button onclick="startFinalTest()">Итоговый тест</button>
+    </div>
 
-  <div class="button-container">
-    <button class="test-button" onclick="window.location.href='test.html'">Электрические цепи постоянного тока</button>
-    <button class="test-button" onclick="window.location.href='#'">Цепи синусоидального тока</button>
-    <button class="test-button" onclick="window.location.href='#'">Электрические машины</button>
-    <button class="test-button" onclick="window.location.href='#'">Электроника</button>
-    <button class="test-button" onclick="window.location.href='testIT.html'">Итоговое тестирование</button>
-  </div>
+    <script>
+        const tgramApp = window.Telegram.WebApp;
+        tgramApp.ready();
 
+        // Функция для начала выбранного теста
+        function startTest(topic, url) {
+            localStorage.setItem('topic', topic); // Сохраняем выбранную тему
+            window.location.href = url;  // Переход на указанную страницу теста
+        }
+
+        // Функция для перехода на итоговый тест
+        function startFinalTest() {
+            localStorage.setItem('topic', 'Итоговый тест'); // Сохраняем тему "Итоговый тест"
+            window.location.href = 'testIT.html';  // Переход на итоговый тест
+        }
+    </script>
 </body>
 </html>
