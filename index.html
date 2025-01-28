@@ -29,7 +29,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
+            width: 100%;
             max-width: 400px;
             display: flex;
             flex-direction: column;
@@ -69,7 +69,6 @@
             outline: none;
         }
 
-        /* Медиазапрос для мобильных устройств */
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -108,25 +107,27 @@
     </form>
 
     <script>
-        const tgramApp = window.Telegram.WebApp;
-        tgramApp.ready();
-        tgramApp.expand(); // Разворачивает WebApp на весь экран
+        // Проверка на WebApp
+        if (window.Telegram.WebApp) {
+            const tgramApp = window.Telegram.WebApp;
+            tgramApp.ready();
+            tgramApp.setTitle('Сбор данных студента'); // Устанавливаем заголовок
+            tgramApp.expand(); // Разворачиваем WebApp на весь экран
+        } else {
+            console.log('WebApp не запущен в Telegram');
+        }
 
         document.getElementById('studentDataForm').onsubmit = function(event) {
             event.preventDefault();
             
-            const lastName = document.getElementById('lastName').value.trim();
-            const group = document.getElementById('group').value.trim();
+            const lastName = document.getElementById('lastName').value;
+            const group = document.getElementById('group').value;
 
-            if (!lastName || !group) {
-                alert('Пожалуйста, заполните все поля.');
-                return;
-            }
-
+            // Сохраняем данные в локальные переменные
             localStorage.setItem('lastName', lastName);
             localStorage.setItem('group', group);
 
-            // Переход на страницу выбора теста внутри WebApp
+            // Перенаправляем на страницу выбора теста
             window.location.href = 'test-selection.html';
         };
     </script>
