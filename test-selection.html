@@ -28,16 +28,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            width: 100%;
-            max-width: 600px;
+            gap: 15px;
+            width: 90%;
+            max-width: 400px;
         }
 
         button {
             background-color: #4CAF50;
             color: white;
             font-size: 16px;
-            padding: 12px 20px;
+            padding: 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -51,6 +51,22 @@
 
         button:focus {
             outline: none;
+        }
+
+        /* Медиазапрос для мобильных устройств */
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            #buttonContainer {
+                width: 95%;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -68,6 +84,7 @@
     <script>
         const tgramApp = window.Telegram.WebApp;
         tgramApp.ready();
+        tgramApp.expand(); // Разворачивает WebApp на весь экран
 
         // Функция для начала выбранного теста
         function startTest(topic, url) {
