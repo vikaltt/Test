@@ -225,7 +225,7 @@
     <div id="resultContainer" style="display:none;">
         <h3>Ваши результаты</h3>
         <p>Правильных ответов: <span id="correctAnswersCount"></span></p>
-        <button onclick="window.location.href='test-selection.html'">Выбрать другой тест</button>
+        <button onclick="window.location.href='test-Selection.html'">Выбрать другой тест</button>
     </div>
 
     <div id="unansweredWarning" style="display:none;">
@@ -272,27 +272,27 @@
             document.getElementById('topic').innerText = topic;
 
             const questionContainer = document.getElementById('questionContainer');
-            let questionHTML = <p>${index + 1}. ${question.question}</p>; // Добавлена нумерация вопросов
+            let questionHTML = `<p>${index + 1}. ${question.question}</p>`; // Добавлена нумерация вопросов
 
             // Если есть изображение, показываем его
             if (question.image_url) {
-                questionHTML += <img src="${question.image_url}" alt="Изображение для вопроса" style="max-width: 100%; height: auto;"><br>;
+                questionHTML += `<img src="${question.image_url}" alt="Изображение для вопроса" style="max-width: 100%; height: auto;"><br>`;
             }
 
             // Отображение вариантов ответа
             question.options.forEach((option, index) => {
-                questionHTML += 
+                questionHTML += `
                     <label class="option">
                         <input type="radio" name="answer" value="${index + 1}">${option}
                     </label><br>
-                ;
+                `;
             });
 
             questionContainer.innerHTML = questionHTML;
 
             // Проверка наличия ответа
             if (answers[index] !== undefined) {
-                document.querySelector(input[value="${answers[index]}"]).checked = true;
+                document.querySelector(`input[value="${answers[index]}"]`).checked = true;
             }
 
             // Изменяем кнопку "Следующий" на "Заверши тест" на последнем вопросе
@@ -409,7 +409,7 @@
                 timeLeft--;
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
-                document.getElementById('timer').innerText = ${minutes}:${seconds < 10 ? '0' : ''}${seconds};
+                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
                 if (timeLeft <= 0) {
                     finishTest(); // Завершаем тест, когда время вышло
