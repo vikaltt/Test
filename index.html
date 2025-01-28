@@ -69,7 +69,6 @@
             outline: none;
         }
 
-        /* Медиазапрос для мобильных устройств */
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -121,8 +120,8 @@
             localStorage.setItem('lastName', lastName);
             localStorage.setItem('group', group);
 
-            // Перенаправляем на страницу выбора теста
-            tgramApp.openLink('test-selection.html');
+            // Перенаправляем на страницу выбора теста с использованием openTelegramLink
+            tgramApp.openTelegramLink('https://your-domain.com/test-selection.html');
         };
     </script>
 </body>
