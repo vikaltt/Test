@@ -1,97 +1,129 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Стартовая страница</title>
-  <style>
-    :root {
-      --primary-color: #4CAF50;
-      --secondary-color: #ffffff;
-      --font-color: #333333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сбор данных студента</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+        }
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: var(--secondary-color);
-      color: var(--font-color);
-    }
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-    .container {
-      text-align: center;
-      max-width: 500px;
-      width: 100%;
-      padding: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      background-color: var(--primary-color);
-      color: var(--secondary-color);
-    }
+        #studentDataForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
+        label {
+            font-size: 16px;
+            color: #555;
+        }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: none;
-      border-radius: 4px;
-    }
+        input {
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-    button {
-      background-color: var(--secondary-color);
-      color: var(--primary-color);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    button:hover {
-      background-color: #f5f5f5;
-    }
-  </style>
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        /* Медиазапрос для мобильных устройств */
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            #studentDataForm {
+                padding: 15px;
+                width: 90%;
+            }
+
+            label {
+                font-size: 14px;
+            }
+
+            input {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Сбор данных</h1>
-    <form id="student-form">
-      <label for="name">Имя студента:</label>
-      <input type="text" id="name" placeholder="Введите имя" required>
-      
-      <label for="group">Группа:</label>
-      <input type="text" id="group" placeholder="Введите группу" required>
-      
-      <button type="submit">Выбрать тему</button>
+    <h2>Введите данные студента</h2>
+    <form id="studentDataForm">
+        <label for="lastName">Фамилия, Имя:</label>
+        <input type="text" id="lastName" placeholder="Введите фамилию и имя" required>
+        
+        <label for="group">Группа:</label>
+        <input type="text" id="group" placeholder="Введите группу" required>
+        
+        <button type="submit">Далее</button>
     </form>
-  </div>
 
-  <script>
-    document.getElementById('student-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const name = document.getElementById('name').value;
-  const group = document.getElementById('group').value;
+    <script>
+        const tgramApp = window.Telegram.WebApp;
+        tgramApp.ready();
 
-  if (name && group) {
-    // Сохранение данных в локальное хранилище
-    localStorage.setItem('studentName', name);
-    localStorage.setItem('studentGroup', group);
+        document.getElementById('studentDataForm').onsubmit = function(event) {
+            event.preventDefault();
+            
+            const lastName = document.getElementById('lastName').value;
+            const group = document.getElementById('group').value;
 
-    // Переход на страницу выбора темы
-    window.location.href = "test-selection.html";
-  }
-});
-  </script>
+            // Сохраняем данные в локальные переменные
+            localStorage.setItem('lastName', lastName);
+            localStorage.setItem('group', group);
+
+            // Перенаправляем на страницу выбора теста
+            tgramApp.openLink('test-selection.html');
+        };
+    </script>
 </body>
 </html>
