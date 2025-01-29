@@ -343,14 +343,10 @@
         // Завершение теста
         function finishTest() {
             const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
-            if (unansweredQuestions.length > 0) {
-                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
-            } else {
-                clearInterval(timer); // Останавливаем таймер
-                calculateResults(); // Показываем результаты
-                sendResults(); // Отправляем результаты в Google Form
-                hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"
-            }
+            clearInterval(timer); // Останавливаем таймер
+            calculateResults(); // Показываем результаты
+            sendResults(); // Отправляем результаты в Google Form
+            hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"
         }
 
         // Проверка на неотвеченные вопросы
@@ -417,16 +413,16 @@
 
         // Таймер
         function startTimer() {
-            timer = setInterval(function() {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-                if (timeLeft <= 0) {
-                    finishTest(); // Завершаем тест, когда время вышло
-                }
-            }, 1000);
+    timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft < 0) {
+            timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
+            finishTest(); // Завершаем тест, если время вышло
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }, 1000);
         }
 
         // Скрыть все кнопки, кроме "Выбрать другой тест"
