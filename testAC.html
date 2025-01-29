@@ -230,9 +230,9 @@
     </div>
     
     <div id="buttonContainer">
-        <button onclick="previousQuestion()">Предыдущий</button>
+         <button id="previousButton" onclick="previousQuestion()">Предыдущий</button>
         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
-        <button id="finishButton" onclick="finishTest()" style="display:none;">Завершить тест</button>
+        <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
     </div>
     
     <div id="resultContainer" style="display:none;">
@@ -307,7 +307,7 @@
                 document.querySelector(`input[value="${answers[index]}"]`).checked = true;
             }
 
-            // Изменяем кнопку "Следующий" на "Завершить тест" на последнем вопросе
+            // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
             if (index === questions.length - 1) {
                 document.getElementById('nextButton').style.display = 'none';
                 document.getElementById('finishButton').style.display = 'block';
