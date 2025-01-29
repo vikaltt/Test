@@ -230,9 +230,9 @@
     </div>
     
     <div id="buttonContainer">
-         <button id="previousButton" onclick="previousQuestion()">Предыдущий</button>
-         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
-         <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
+        <button onclick="previousQuestion()">Предыдущий</button>
+        <button id="nextButton" onclick="nextQuestion()">Следующий</button>
+        <button id="finishButton" onclick="finishTest()" style="display:none;">Заверши тест</button>
     </div>
     
     <div id="resultContainer" style="display:none;">
@@ -254,7 +254,7 @@
         let answers = [];
         let correctAnswers = [];
         let timer;
-        let timeLeft = 0.1 * 60; // 11 минут в секундах
+        let timeLeft = 11 * 60; // 11 минут в секундах
 
         // Загрузка вопросов из JSON
         fetch('./files/question.json')
@@ -307,7 +307,7 @@
                 document.querySelector(`input[value="${answers[index]}"]`).checked = true;
             }
 
-            // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
+            // Изменяем кнопку "Следующий" на "Заверши тест" на последнем вопросе
             if (index === questions.length - 1) {
                 document.getElementById('nextButton').style.display = 'none';
                 document.getElementById('finishButton').style.display = 'block';
@@ -340,13 +340,17 @@
             }
         });
 
-        / Завершение теста
+        // Завершение теста
         function finishTest() {
             const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
-            clearInterval(timer); // Останавливаем таймер
-            calculateResults(); // Показываем результаты
-            sendResults(); // Отправляем результаты в Google Form
-            hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"         
+            if (unansweredQuestions.length > 0) {
+                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+            } else {
+                clearInterval(timer); // Останавливаем таймер
+                calculateResults(); // Показываем результаты
+                sendResults(); // Отправляем результаты в Google Form
+                hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"
+            }
         }
 
         // Проверка на неотвеченные вопросы
@@ -413,17 +417,18 @@
 
         // Таймер
         function startTimer() {
-    timer = setInterval(function() {
-        timeLeft--;
-        if (timeLeft < 0) {
-            timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
-            finishTest(); // Завершаем тест, если время вышло
+            timer = setInterval(function() {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (timeLeft <= 0) {
+                    finishTest(); // Завершаем тест, когда время вышло
+                }
+            }, 1000);
         }
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    }, 1000);
-}
+
         // Скрыть все кнопки, кроме "Выбрать другой тест"
         function hideButtons() {
             document.getElementById('buttonContainer').style.display = 'none';
