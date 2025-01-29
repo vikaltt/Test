@@ -200,8 +200,21 @@
             .option {
                 font-size: 0.9rem;
             }
+            
+        /* Изменения для кнопок */
+        #buttonContainer {
+            flex-direction: column; /* Устанавливаем столбцовый порядок для кнопок */
         }
-    </style>
+
+        #nextButton {
+            order: -1; /* Устанавливаем кнопку "Следующий" сверху */
+        }
+
+        #previousButton {
+            order: 1; /* Устанавливаем кнопку "Предыдущий" снизу */
+        }
+    }
+</style>
     
 </head>
 <body>
@@ -217,7 +230,7 @@
     </div>
     
     <div id="buttonContainer">
-        <button onclick="previousQuestion()">Предыдущий</button>
+        <button id="previousButton" onclick="previousQuestion()">Предыдущий</button>
         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
         <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
     </div>
@@ -296,7 +309,7 @@
             }
 
             // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
-            if (index === questions.length - 1) {
+            if (index === questions.length > 0) {
                 document.getElementById('nextButton').style.display = 'none';
                 document.getElementById('finishButton').style.display = 'block';
             } else {
@@ -307,7 +320,7 @@
 
         // Переход к следующему вопросу
         function nextQuestion() {
-            if (currentQuestionIndex < questions.length > 0) {
+            if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion(currentQuestionIndex);
             }
