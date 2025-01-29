@@ -309,7 +309,7 @@
             }
 
             // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
-            if (index === questions.length > 0) {
+            if (index === questions.length - 1) {
                 document.getElementById('nextButton').style.display = 'none';
                 document.getElementById('finishButton').style.display = 'block';
             } else {
@@ -328,7 +328,7 @@
 
         // Переход к предыдущему вопросу
         function previousQuestion() {
-            if (currentQuestionIndex - 1) {
+            if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 displayQuestion(currentQuestionIndex);
             }
