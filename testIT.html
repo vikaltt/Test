@@ -349,16 +349,15 @@
 
         // Завершение теста
         function finishTest() {
-            const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
-            if (unansweredQuestions.length > 0) {
-                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
-            } else {
-                clearInterval(timer); // Останавливаем таймер
-                sendResults(); // Отправляем результаты в Google Form
-                closeQuestions(); // Закрываем вопросы
-                showFinishMessage(); // Показываем сообщение о завершении теста
-            }
-        }
+    const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+    if (unansweredQuestions.length > 0) {
+        showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+    }
+    clearInterval(timer); // Останавливаем таймер
+    sendResults(); // Отправляем результаты в Google Form
+    closeQuestions(); // Закрываем вопросы
+    showFinishMessage(); // Показываем сообщение о завершении теста
+}
 
         // Проверка на неотвеченные вопросы
         function checkUnansweredQuestions() {
@@ -431,19 +430,19 @@
             document.getElementById('unansweredWarning').style.display = 'none'; // Прячем предупреждение, если все вопросы отвечены
         }
 
-        // Таймер
+        / Таймер
         function startTimer() {
-            timer = setInterval(function() {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-                if (timeLeft <= 0) {
-                    finishTest(); // Завершаем тест, когда время вышло
-                }
-            }, 1000);
+    timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft < 0) {
+            timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
+            finishTest(); // Завершаем тест, если время вышло
         }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }, 1000);
+}
     </script>
 </body>
 </html>
