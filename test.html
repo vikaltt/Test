@@ -242,7 +242,7 @@
         let answers = [];
         let correctAnswers = [];
         let timer;
-        let timeLeft = 10 * 60; // 10 минут в секундах
+        let timeLeft = 1 * 60; // 10 минут в секундах
 
         // Загрузка вопросов из JSON
         fetch('./files/question.json')
@@ -307,7 +307,7 @@
 
         // Переход к следующему вопросу
         function nextQuestion() {
-            if (currentQuestionIndex < questions.length - 1) {
+            if (currentQuestionIndex < questions.length > 0) {
                 currentQuestionIndex++;
                 displayQuestion(currentQuestionIndex);
             }
@@ -315,7 +315,7 @@
 
         // Переход к предыдущему вопросу
         function previousQuestion() {
-            if (currentQuestionIndex > 0) {
+            if (currentQuestionIndex - 1) {
                 currentQuestionIndex--;
                 displayQuestion(currentQuestionIndex);
             }
