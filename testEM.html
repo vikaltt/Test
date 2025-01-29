@@ -423,8 +423,7 @@
         const seconds = timeLeft % 60;
         document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }, 1000);
-        }
-
+}
         // Скрыть все кнопки, кроме "Выбрать другой тест"
         function hideButtons() {
             document.getElementById('buttonContainer').style.display = 'none';
