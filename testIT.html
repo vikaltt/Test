@@ -6,29 +6,9 @@
     <title>Тест</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --background-light: #f4f4f9;
-            --background-dark: #333;
-            --primary-color: #4CAF50;
-            --primary-color-hover: #45a049;
-            --secondary-color: #FF5722;
-            --button-bg: #4CAF50;
-            --button-hover-bg: #45a049;
-            --warning-color: #D32F2F;
-            --text-color: #333;
-            --highlight-color: #007BFF;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 80;
-            padding: 0;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            background-color: var(--background-light);
-            color: var(--text-color);
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
             display: flex;
@@ -36,108 +16,97 @@
             align-items: center;
             height: 100vh;
             justify-content: center;
-            padding: 0px;
-            transition: background-color 0.3s ease;
         }
-
+    
         h2 {
-            color: var(--text-color);
-            font-size: 1.5rem;
-            margin-bottom: 0px;
-            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-
+    
         #timerContainer {
-            margin: 5px 0;
-            font-size: 1rem;
-            color: var(--secondary-color);
-            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            color: #FF5722;
         }
-
+    
         #questionContainer {
             background-color: #fff;
-            padding: 0px;
-            border-radius: 0px;
-            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
-            margin-bottom: 5px;
-            display: grid;
-            gap: 0px;
+            margin-bottom: 20px;
         }
-
+    
         #questionContainer p {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            word-wrap: break-word;
+            font-size: 18px;
+            margin-bottom: 15px;
         }
-
+    
         #questionContainer img {
             max-width: 100%;
             height: auto;
-            border-radius: 0px;
-            margin: 0px 0;
+            border-radius: 8px;
+            margin: 10px 0;
         }
-
+    
         #buttonContainer {
             display: flex;
             justify-content: space-between;
             width: 100%;
             max-width: 600px;
-            gap: 0px;
-            flex-wrap: wrap;
         }
-
+    
         button {
-            background-color: var(--button-bg);
+            background-color: #4CAF50;
             color: white;
-            font-size: 1rem;
-            padding: 10px 0px;
+            font-size: 16px;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            flex: 1;
-            max-width: 45%;
+            width: 48%;
         }
-
+    
         button:hover {
-            background-color: var(--button-hover-bg);
+            background-color: #45a049;
         }
-
+    
         button:focus {
             outline: none;
         }
-
+    
         #finishButton {
             background-color: #FF9800;
             display: none;
         }
-
+    
         #finishButton:hover {
             background-color: #f57c00;
         }
-
+    
         #resultContainer {
             text-align: center;
-            font-size: 1rem;
-            color: var(--text-color);
+            font-size: 18px;
+            color: #333;
         }
-
+    
         #unansweredWarning {
-            color: var(--warning-color);
-            margin-top: 0px;
-            font-size: 1rem;
+            color: #D32F2F;
+            margin-top: 20px;
+            font-size: 16px;
         }
-
+    
         #unansweredQuestionsList {
             font-weight: bold;
         }
-
+    
         .option {
             margin: 0;
-            margin-bottom: -10px; /* Уменьшаем или увеличиваем расстояние */
-            padding: 3px;
+            padding: 8px;
             background-color: #fafafa;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -145,76 +114,60 @@
             transition: background-color 0.3s ease;
             display: block;
             width: 100%;
-            font-size: 1rem;
         }
-
+    
         .option:hover {
             background-color: #e0e0e0;
         }
-
+    
         .selected {
-            background-color: var(--highlight-color);
+            background-color: #007BFF;
             color: white;
         }
-
+    
         /* Медиазапрос для мобильных устройств */
         @media (max-width: 600px) {
             h2 {
-                font-size: 1.25rem;
+                font-size: 20px; /* Уменьшаем размер заголовка */
             }
-
+    
             #timerContainer {
-                font-size: 0.9rem;
+                font-size: 14px; /* Уменьшаем размер шрифта таймера */
             }
-
+    
             #questionContainer {
-                padding: 10px;
-                width: 100%;
-                max-width: 100%;
+                padding: 10px; /* Уменьшаем отступы для мобильных устройств */
+                width: 90%; /* Убираем ограничение по ширине */
             }
-
+    
             #buttonContainer {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: column; /* Кнопки в колонку */
+                align-items: center; /* Центрируем кнопки */
                 width: 100%;
             }
-
+    
             button {
-                width: 100%;
-                margin: 5px 0;
-                max-width: 100%;
+                width: 100%; /* Кнопки на всю ширину */
+                margin: 5px 0; /* Добавляем отступы между кнопками */
             }
-
+    
             #finishButton {
-                width: 100%;
+                width: 100%; /* Кнопка завершения тоже на всю ширину */
             }
-
+    
             #resultContainer {
-                font-size: 1rem;
+                font-size: 14px; /* Уменьшаем размер шрифта результатов */
             }
-
+    
             #unansweredWarning {
-                font-size: 1rem;
+                font-size: 14px; /* Уменьшаем размер шрифта предупреждения */
             }
-
+    
             .option {
-                font-size: 0.9rem;
+                font-size: 14px; /* Уменьшаем размер шрифта для вариантов ответов */
             }
-            
-        /* Изменения для кнопок */
-        #buttonContainer {
-            flex-direction: column; /* Устанавливаем столбцовый порядок для кнопок */
         }
-
-        #nextButton {
-            order: -1; /* Устанавливаем кнопку "Следующий" сверху */
-        }
-
-        #previousButton {
-            order: 1; /* Устанавливаем кнопку "Предыдущий" снизу */
-        }
-    }
-</style>
+    </style>
             
 </head>
 <body>
@@ -230,14 +183,14 @@
     </div>
     
     <div id="buttonContainer">
-         <button id="previousButton" onclick="previousQuestion()">Предыдущий</button>
+        <button onclick="previousQuestion()">Предыдущий</button>
         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
         <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
     </div>
     
     <div id="resultContainer" style="display:none;">
         <h3>Тест завершен!</h3>
-        <button onclick="window.location.href='test-selection.html'">Выбрать другой тест</button>
+        <button onclick="window.location.href='test-Selection.html'">Выбрать другой тест</button>
     </div>
     
     <div id="unansweredWarning" style="color: red; display: none;">
@@ -430,7 +383,7 @@
             document.getElementById('unansweredWarning').style.display = 'none'; // Прячем предупреждение, если все вопросы отвечены
         }
 
-        / Таймер
+        // Таймер
         function startTimer() {
     timer = setInterval(function() {
         timeLeft--;
