@@ -200,8 +200,21 @@
             .option {
                 font-size: 0.9rem;
             }
+            
+        /* Изменения для кнопок */
+        #buttonContainer {
+            flex-direction: column; /* Устанавливаем столбцовый порядок для кнопок */
         }
-    </style>
+
+        #nextButton {
+            order: -1; /* Устанавливаем кнопку "Следующий" сверху */
+        }
+
+        #previousButton {
+            order: 1; /* Устанавливаем кнопку "Предыдущий" снизу */
+        }
+    }
+</style>
     
 </head>
 <body>
