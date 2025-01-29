@@ -232,7 +232,7 @@
     <div id="buttonContainer">
         <button onclick="previousQuestion()">Предыдущий</button>
         <button id="nextButton" onclick="nextQuestion()">Следующий</button>
-        <button id="finishButton" onclick="finishTest()" style="display:none;">Заверши тест</button>
+        <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
     </div>
     
     <div id="resultContainer" style="display:none;">
@@ -307,7 +307,7 @@
                 document.querySelector(`input[value="${answers[index]}"]`).checked = true;
             }
 
-            // Изменяем кнопку "Следующий" на "Заверши тест" на последнем вопросе
+            // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
             if (index === questions.length - 1) {
                 document.getElementById('nextButton').style.display = 'none';
                 document.getElementById('finishButton').style.display = 'block';
@@ -415,18 +415,18 @@
             });
         }
 
-        // Таймер
+         // Таймер
         function startTimer() {
-            timer = setInterval(function() {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-                if (timeLeft <= 0) {
-                    finishTest(); // Завершаем тест, когда время вышло
-                }
-            }, 1000);
+    timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft < 0) {
+            timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
+            finishTest(); // Завершаем тест, если время вышло
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }, 1000);
         }
 
         // Скрыть все кнопки, кроме "Выбрать другой тест"
