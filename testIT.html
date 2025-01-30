@@ -119,7 +119,12 @@
         .option:hover {
             background-color: #e0e0e0;
         }
-    
+    body {
+    user-select: none; /* Стандартное свойство */
+    -webkit-user-select: none; /* Для Safari и браузеров на WebKit */
+    -moz-user-select: none; /* Для Firefox */
+    -ms-user-select: none; /* Для старых версий Internet Explorer/Edge */
+}
         .selected {
             background-color: #007BFF;
             color: white;
@@ -409,6 +414,13 @@
         document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }, 1000);
 }
+        
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
