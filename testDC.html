@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --background-light: #f4f4f9;
+            --background-dark: #333;
+            --primary-color: #4CAF50;
+            --primary-color-hover: #45a049;
+            --secondary-color: #FF5722;
+            --button-bg: #4CAF50;
+            --button-hover-bg: #45a049;
+            --warning-color: #D32F2F;
+            --text-color: #333;
+            --highlight-color: #007BFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 80;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+            padding: 0px;
+            transition: background-color 0.3s ease;
+        }
+
+        h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 0px;
+            text-align: center;
+        }
+
+        #timerContainer {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        #questionContainer {
+            background-color: #fff;
+            padding: 0px;
+            border-radius: 0px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 5px;
+            display: grid;
+            gap: 0px;
+        }
+
+        #questionContainer p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        #questionContainer img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0px;
+            margin: 0px 0;
+        }
+
+        #buttonContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            gap: 0px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            font-size: 1rem;
+            padding: 10px 0px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            max-width: 45%;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        #finishButton {
+            background-color: #FF9800;
+            display: none;
+        }
+
+        #finishButton:hover {
+            background-color: #f57c00;
+        }
+
+        #resultContainer {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        #unansweredWarning {
+            color: var(--warning-color);
+            margin-top: 0px;
+            font-size: 1rem;
+        }
+
+        #unansweredQuestionsList {
+            font-weight: bold;
+        }
+
+        .option {
+            margin: 0;
+            margin-bottom: -10px; /* Уменьшаем или увеличиваем расстояние */
+            padding: 3px;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+
+        .selected {
+            background-color: var(--highlight-color);
+            color: white;
+        }
+
+        /* Медиазапрос для мобильных устройств */
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            #timerContainer {
+                font-size: 0.9rem;
+            }
+
+            #questionContainer {
+                padding: 10px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #buttonContainer {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+                margin: 5px 0;
+                max-width: 100%;
+            }
+
+            #finishButton {
+                width: 100%;
+            }
+
+            #resultContainer {
+                font-size: 1rem;
+            }
+
+            #unansweredWarning {
+                font-size: 1rem;
+            }
+
+            .option {
+            font-size: 0.9rem;
+        }
+
+        /* Изменения для кнопок */
+        #buttonContainer {
+            flex-direction: column; /* Устанавливаем столбцовый порядок для кнопок */
+        }
+
+        #nextButton {
+            order: -1; /* Устанавливаем кнопку "Следующий" сверху */
+        }
+
+        #previousButton {
+            order: 1; /* Устанавливаем кнопку "Предыдущий" снизу */
+        }
+    }
+     </style>
+    
+</head>
+<body>
+    <h2>Тема: <span id="topic"></span></h2>
+
+    <!-- Таймер -->
+    <div id="timerContainer">
+        <p>Оставшееся время: <span id="timer"></span></p>
+    </div>
+
+    <div id="questionContainer">
+        <!-- Вопросы будут динамически добавляться сюда -->
+    </div>
+    
+    <div id="buttonContainer">
+        <button onclick="previousQuestion()">Предыдущий</button>
+        <button id="nextButton" onclick="nextQuestion()">Следующий</button>
+        <button id="finishButton" onclick="finishTest()" style="display:none;">Завершите тест</button>
+    </div>
+    
+    <div id="resultContainer" style="display:none;">
+        <h3>Ваши результаты</h3>
+        <p>Правильных ответов: <span id="correctAnswersCount"></span></p>
+        <button onclick="window.location.href='test-selection.html'">Выбрать другой тест</button>
+    </div>
+
+    <div id="unansweredWarning" style="display:none;">
+        <p>Вы не ответили на следующие вопросы: <span id="unansweredQuestionsList"></span></p>
+    </div>
+    
+    <script>
+        const tgramApp = window.Telegram.WebApp;
+        tgramApp.ready();
+        tgramApp.expand(); // Разворачиваем WebApp на весь экран
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let correctAnswers = [];
+        let timer;
+        let timeLeft = 1 * 60; // 10 минут в секундах
+
+       // Загрузка вопросов из JSON
+fetch('./files/questionDC.json')
+    .then(response => response.json())
+    .then(data => {
+        // Перемешиваем все вопросы и выбираем 20 случайных из всего списка
+        questions = data.sort(() => 0.5 - Math.random()).slice(0, 20); // Перемешиваем и выбираем 20 вопросов
+        correctAnswers = questions.map(q => q.answer); // Массив с правильными ответами
+        
+        // Перемешиваем ответы для каждого вопроса
+        questions.forEach(question => shuffleArray(question.options));
+        
+        displayQuestion(currentQuestionIndex);
+        startTimer();
+    });
+
+
+        // Функция для случайного перемешивания массива
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Обмен элементов
+            }
+        }
+
+        // Отображение текущего вопроса
+        function displayQuestion(index) {
+            const question = questions[index];
+            const topic = localStorage.getItem('topic');
+            document.getElementById('topic').innerText = topic;
+
+            const questionContainer = document.getElementById('questionContainer');
+            let questionHTML = `<p>${index + 1}. ${question.question}</p>`; // Добавлена нумерация вопросов
+
+            // Если есть изображение, показываем его
+            if (question.image_url) {
+                questionHTML += `<img src="${question.image_url}" alt="Изображение для вопроса" style="max-width: 100%; height: auto;"><br>`;
+            }
+
+            // Отображение вариантов ответа
+            question.options.forEach((option, index) => {
+                questionHTML += `
+                    <label class="option">
+                        <input type="radio" name="answer" value="${index + 1}">${option}
+                    </label><br>
+                `;
+            });
+
+            questionContainer.innerHTML = questionHTML;
+
+            // Проверка наличия ответа
+            if (answers[index] !== undefined) {
+                document.querySelector(`input[value="${answers[index]}"]`).checked = true;
+            }
+
+            // Изменяем кнопку "Следующий" на "Завершите тест" на последнем вопросе
+            if (index === questions.length - 1) {
+                document.getElementById('nextButton').style.display = 'none';
+                document.getElementById('finishButton').style.display = 'block';
+            } else {
+                document.getElementById('nextButton').style.display = 'block';
+                document.getElementById('finishButton').style.display = 'none';
+            }
+        }
+
+        // Переход к следующему вопросу
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Переход к предыдущему вопросу
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Сохранение ответа
+        document.querySelector('#questionContainer').addEventListener('change', function(event) {
+            if (event.target.name === 'answer') {
+                answers[currentQuestionIndex] = event.target.value; // Сохраняем выбранный ответ
+            }
+        });
+
+        // Завершение теста
+        function finishTest() {
+    const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+    if (unansweredQuestions.length > 0) {
+        showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+        document.getElementById('finishButton').style.display = 'none'; // Скрываем кнопку завершения
+        // Не показываем кнопку "Подтвердить завершение", сразу завершаем тест, если есть неотвеченные вопросы
+    } else {
+        clearInterval(timer); // Останавливаем таймер
+        calculateResults(); // Показываем результаты
+        sendResults(); // Отправляем результаты в Google Form
+        hideButtons(); // Скрываем все кнопки
+    }
+}
+
+
+        // Проверка на неотвеченные вопросы
+        function checkUnansweredQuestions() {
+            const unanswered = [];
+            questions.forEach((question, index) => {
+                if (answers[index] === undefined) {
+                    unanswered.push(index + 1); // Добавляем номер вопроса (с 1)
+                }
+            });
+            return unanswered;
+        }
+
+        // Отображение уведомления о неотвеченных вопросах
+        function showUnansweredWarning(unanswered) {
+            const unansweredContainer = document.getElementById('unansweredQuestionsList');
+            unansweredContainer.innerHTML = unanswered.join(', ');
+            document.getElementById('unansweredWarning').style.display = 'block';
+        }
+
+        // Подсчет правильных ответов и отображение
+        function calculateResults() {
+            let correctCount = 0;
+
+            // Проверка правильных ответов
+            answers.forEach((answer, index) => {
+                const question = questions[index];
+                const correctAnswer = correctAnswers[index];
+                if (question.options[answer - 1] === correctAnswer) {
+                    correctCount++;
+                }
+            });
+
+            // Показываем только количество правильных ответов
+            document.getElementById('correctAnswersCount').innerText = correctCount;
+            document.getElementById('resultContainer').style.display = 'block'; // Показываем результаты
+            document.getElementById('questionContainer').style.display = 'none'; // Скрываем вопросы
+        }
+
+        // Отправка результатов в Google Form
+        function sendResults() {
+            const lastName = localStorage.getItem('lastName');
+            const group = localStorage.getItem('group');
+            const topic = localStorage.getItem('topic');
+            const correctCount = document.getElementById('correctAnswersCount').innerText;
+
+            const formData = new FormData();
+            formData.append('entry.1589564253', lastName);
+            formData.append('entry.1002659139', group);
+            formData.append('entry.1718485540', topic);
+            formData.append('entry.1008950575', correctCount); // Отправляем только количество правильных ответов
+
+            fetch('https://docs.google.com/forms/d/e/1FAIpQLSfCkgXx4YXLnKUhErL0Nmrp51we-Bjq905PdBunXGeE0eW6cg/formResponse', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Результаты успешно отправлены');
+            })
+            .catch(error => {
+                console.log('Ошибка при отправке данных');
+            });
+        }
+
+        // Таймер
+        function startTimer() {
+    timer = setInterval(function() {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer); // Останавливаем таймер
+            const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+            if (unansweredQuestions.length > 0) {
+                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+                // Завершаем тест сразу, без появления кнопки подтверждения
+                calculateResults(); // Показываем результаты
+                sendResults(); // Отправляем результаты в Google Form
+                hideButtons(); // Скрываем все кнопки
+            } else {
+                finishTest(); // Завершаем тест, если все вопросы отвечены
+            }
+        }
+    }, 1000);
+}
+
+        // Скрыть все кнопки, кроме "Выбрать другой тест"
+        function hideButtons() {
+            document.getElementById('buttonContainer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
