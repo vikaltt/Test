@@ -319,11 +319,20 @@
         });
 
         // Завершение теста
-        function finishTest() {
+       function finishTest() {
     const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
     if (unansweredQuestions.length > 0) {
         showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+        return; // Прерываем завершение теста
     }
+    clearInterval(timer); // Останавливаем таймер
+    sendResults(); // Отправляем результаты в Google Form
+    closeQuestions(); // Закрываем вопросы
+    showFinishMessage(); // Показываем сообщение о завершении теста
+}
+
+// Завершение теста по таймеру
+function finishTestByTimer() {
     clearInterval(timer); // Останавливаем таймер
     sendResults(); // Отправляем результаты в Google Form
     closeQuestions(); // Закрываем вопросы
@@ -407,7 +416,7 @@
         timeLeft--;
         if (timeLeft < 0) {
             timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
-            finishTest(); // Завершаем тест, если время вышло
+            finishTestByTimer(); // Завершаем тест, если время вышло
         }
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
