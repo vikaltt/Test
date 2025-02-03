@@ -348,13 +348,19 @@
         });
 
         // Завершение теста
-        function finishTest() {
-            const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
-            clearInterval(timer); // Останавливаем таймер
-            calculateResults(); // Показываем результаты
-            sendResults(); // Отправляем результаты в Google Form
-            hideButtons(); // Скрываем все кнопки, кроме "Выбрать другой тест"
-        }
+         function finishTest() {
+    const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+    if (unansweredQuestions.length > 0) {
+        showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+        document.getElementById('finishButton').style.display = 'none'; // Скрываем кнопку завершения
+        // Не показываем кнопку "Подтвердить завершение", сразу завершаем тест, если есть неотвеченные вопросы
+    } else {
+        clearInterval(timer); // Останавливаем таймер
+        calculateResults(); // Показываем результаты
+        sendResults(); // Отправляем результаты в Google Form
+        hideButtons(); // Скрываем все кнопки
+    }
+}
 
         // Проверка на неотвеченные вопросы
         function checkUnansweredQuestions() {
@@ -422,15 +428,25 @@
         function startTimer() {
     timer = setInterval(function() {
         timeLeft--;
-        if (timeLeft < 0) {
-            timeLeft = 0; // Устанавливаем 0, чтобы избежать отрицательного времени
-            finishTest(); // Завершаем тест, если время вышло
-        }
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    }, 1000);
+
+        if (timeLeft <= 0) {
+            clearInterval(timer); // Останавливаем таймер
+            const unansweredQuestions = checkUnansweredQuestions(); // Проверка на неотвеченные вопросы
+            if (unansweredQuestions.length > 0) {
+                showUnansweredWarning(unansweredQuestions); // Показ уведомления о неотвеченных вопросах
+                // Завершаем тест сразу, без появления кнопки подтверждения
+                calculateResults(); // Показываем результаты
+                sendResults(); // Отправляем результаты в Google Form
+                hideButtons(); // Скрываем все кнопки
+            } else {
+                finishTest(); // Завершаем тест, если все вопросы отвечены
+            }
         }
+    }, 1000);
+}
 
         // Скрыть все кнопки, кроме "Выбрать другой тест"
         function hideButtons() {
