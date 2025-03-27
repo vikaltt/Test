@@ -151,7 +151,12 @@
         .option:hover {
             background-color: #e0e0e0;
         }
-
+       body {
+    user-select: none; /* Стандартное свойство */
+    -webkit-user-select: none; /* Для Safari и браузеров на WebKit */
+    -moz-user-select: none; /* Для Firefox */
+    -ms-user-select: none; /* Для старых версий Internet Explorer/Edge */
+}
         .selected {
             background-color: var(--highlight-color);
             color: white;
